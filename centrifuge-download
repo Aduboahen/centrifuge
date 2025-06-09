@@ -12,7 +12,11 @@ cut_after_first_space_or_second_pipe() {
 export -f cut_after_first_space_or_second_pipe
 
 map_headers_to_taxid() {
-    grep '^>' | cut_after_first_space_or_second_pipe | sed -e "s/^>//" -e  "s/\$/    $1/"
+    if [[ $LOCK_FILE != "" ]]; then
+      grep '^>' | cut_after_first_space_or_second_pipe | sed -e "s/^>//" -e  "s/\$/    $1/" | flock -x $LOCK_FILE -c 'cat'
+    else # this handles the single-thread case
+      grep '^>' | cut_after_first_space_or_second_pipe | sed -e "s/^>//" -e  "s/\$/    $1/" 
+    fi
 }
 export -f map_headers_to_taxid
 
@@ -254,6 +258,7 @@ dat_to_fna() {
 }
 
 #### CONTAMINANT SEQ DOWNLOAD
+export LOCK_FILE=""
 if [[ "$DATABASE" == "contaminants" ]]; then 
   echo "Downloading contaminant databases ... " >&2
   CONTAMINANT_TAXID=32630
@@ -295,6 +300,18 @@ export LIBDIR="$BASE_DIR"
 export DO_DUST="$DO_DUST"
 export CHANGE_HEADER="$CHANGE_HEADER"
 
+#### Handle multithreading
+export LOCK_FILE=""
+
+if [ $N_PROC -gt 1 ]; then
+  if ! command -v flock >/dev/null 2>&1; then
+    echo "WARNING: flock is not installed, will change the number of thread to 1." 1>&2
+    N_PROC=1
+  else
+    export LOCK_FILE="./lockfile.lock"
+  fi
+fi
+
 ## Fields in the assembly_summary.txt file
 REFSEQ_CAT_FIELD=5
 TAXID_FIELD=6
@@ -327,7 +344,8 @@ fi
 
 for DOMAIN in $DOMAINS; do
     if [[ -s .listing ]]; then
-        if [[ ! `grep "^d.* $DOMAIN" .listing` ]]; then
+        #if [[ ! `grep "^d.* $DOMAIN" .listing` ]]; then
+        if [[ ! `grep "$DOMAIN" .listing` ]]; then
             c_echo "$DOMAIN is not a valid domain - use one of the following:" >&2
             grep '^d' .listing  | sed 's/.* //' | sed 's/^/  /' 1>&2
             exit 1
@@ -390,3 +408,7 @@ for DOMAIN in $DOMAINS; do
         echo >&2
     fi
 done
+
+if [[ $LOCK_FILE != "" && -f $LOCK_FILE ]]; then
+  rm $LOCK_FILE 
+fi
