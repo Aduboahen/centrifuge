@@ -821,6 +821,7 @@ if(defined($cap_out)) {
 		print {$ofh} $outputHeader ;
 	}
 
+	my $prevReadId = "-1" ;
 	while(<BT>) {
 		chomp;
 		my $filt = 0;
@@ -891,7 +892,7 @@ if(defined($cap_out)) {
 							print {$read_fhs{un}} $l if defined($read_fhs{un});
 						} else {
 							# Aligned
-							print {$read_fhs{al}} $l if defined($read_fhs{al});
+							print {$read_fhs{al}} $l if defined($read_fhs{al}) && $cols[$readIdIndex] ne $prevReadId;
 						}
 					}
 					my $warnedAboutLength = 0 ;
@@ -919,13 +920,14 @@ if(defined($cap_out)) {
 						}
 
 						if     ( !$unal) {
-							print {$read_fhs{"al-conc"}{1}} $l1 if defined($read_fhs{"al-conc"});
-							print {$read_fhs{"al-conc"}{2}} $l2 if defined($read_fhs{"al-conc"});
+							print {$read_fhs{"al-conc"}{1}} $l1 if defined($read_fhs{"al-conc"}) && $cols[$readIdIndex] ne $prevReadId;
+							print {$read_fhs{"al-conc"}{2}} $l2 if defined($read_fhs{"al-conc"}) && $cols[$readIdIndex] ne $prevReadId;
 						} else {
 							print {$read_fhs{"un-conc"}{1}} $l1 if defined($read_fhs{"un-conc"});
 							print {$read_fhs{"un-conc"}{2}} $l2 if defined($read_fhs{"un-conc"});
 						}
 					}
+					$prevReadId = $cols[$readIdIndex] ;
 				}
 			}
 		}
