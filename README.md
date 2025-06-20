@@ -14,7 +14,7 @@ within a few minutes.  Together these advances enable timely and
 accurate analysis of large metagenomics data sets on conventional
 desktop computers
 
-Please also check the sucessor of Centrifuge, [Centrifuger](https://github.com/mourisl/centrifuger), that is more memory-efficient, more accurate, having more features (like single-cell data), and under more active maintenance.
+Please also check the sucessor of Centrifuge, [Centrifuger](https://github.com/mourisl/centrifuger), which is more memory-efficient, more accurate, having more features (like single-cell data), and under more active maintenance.
 
 The Centrifuge hompage is  http://www.ccb.jhu.edu/software/centrifuge
 
