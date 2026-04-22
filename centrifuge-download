@@ -40,14 +40,14 @@ function download_n_process() {
             $DL_CMD "$FILEPATH" "$LIBDIR/$DOMAIN/$NAME.gz" || \
             { printf "\nError downloading $FILEPATH!\n" >&2 && exit 1; }
         else
-            $DL_CMD "$LIBDIR/$DOMAIN/$NAME.gz" "$FILEPATH" || \
-            $DL_CMD "$LIBDIR/$DOMAIN/$NAME.gz" "$FILEPATH" || \
-            $DL_CMD "$LIBDIR/$DOMAIN/$NAME.gz" "$FILEPATH" || \
+            $DL_CMD "$GZIPPED_FILE" "$FILEPATH" || \
+            $DL_CMD "$GZIPPED_FILE" "$FILEPATH" || \
+            $DL_CMD "$GZIPPED_FILE" "$FILEPATH" || \
 	    { printf "\nError downloading $FILEPATH!\n" >&2 && exit 1; }
         fi
     
-        [[ -s "$LIBDIR/$DOMAIN/$NAME.gz" ]] || return;
-        gunzip -f "$LIBDIR/$DOMAIN/$NAME.gz" ||{ printf "\nError gunzipping $LIBDIR/$DOMAIN/$NAME.gz [ downloaded from $FILEPATH ]!\n" >&2 &&  exit 255; }
+        [[ -s "$GZIPPED_FILE" ]] || return;
+        gunzip -f "$GZIPPED_FILE" ||{ printf "\nError gunzipping $LIBDIR/$DOMAIN/$NAME.gz [ downloaded from $FILEPATH ]!\n" >&2 &&  exit 255; }
     
         
         if [[ "$CHANGE_HEADER" == "1" ]]; then
